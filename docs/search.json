@@ -1,0 +1,79 @@
+[
+  {
+    "objectID": "index.html#proposal-performant-models-are-fair",
+    "href": "index.html#proposal-performant-models-are-fair",
+    "title": "",
+    "section": "Proposal: Performant models are fair",
+    "text": "Proposal: Performant models are fair\n\nApply calibration to correct for correlated errors."
+  },
+  {
+    "objectID": "index.html#proposal-performant-models-are-fair-1",
+    "href": "index.html#proposal-performant-models-are-fair-1",
+    "title": "",
+    "section": "Proposal: Performant models are fair",
+    "text": "Proposal: Performant models are fair\n\n\nPerhaps this is better?"
+  },
+  {
+    "objectID": "index.html#proposal-performant-models-are-fair-2",
+    "href": "index.html#proposal-performant-models-are-fair-2",
+    "title": "",
+    "section": "Proposal: Performant models are fair",
+    "text": "Proposal: Performant models are fair\nLet’s plot the errors:\n\n\n…let’s not forget those y-axis units."
+  },
+  {
+    "objectID": "index.html#proposal-performant-models-are-fair-3",
+    "href": "index.html#proposal-performant-models-are-fair-3",
+    "title": "",
+    "section": "Proposal: Performant models are fair",
+    "text": "Proposal: Performant models are fair\nLet’s plot the errors:\n\n…let’s not forget those y-axis units."
+  },
+  {
+    "objectID": "index.html#proposal-similar-percentage-error-is-most-fair",
+    "href": "index.html#proposal-similar-percentage-error-is-most-fair",
+    "title": "",
+    "section": "Proposal: Similar percentage error is most fair",
+    "text": "Proposal: Similar percentage error is most fair"
+  },
+  {
+    "objectID": "index.html#the-whole-system-1",
+    "href": "index.html#the-whole-system-1",
+    "title": "",
+    "section": "The whole system",
+    "text": "The whole system\nHow will these predictions even be used, though?\n\n\nFixed Percentage: All properties taxed at .9% assessed value\nHomeowner Exemption: For those that live in the home they own, first xyz not taxed, then .9% assessed value\nTransitioning from regressivity: Is a rapid change in assessment unfair?"
+  },
+  {
+    "objectID": "index.html#the-hard-parts",
+    "href": "index.html#the-hard-parts",
+    "title": "",
+    "section": "The hard parts",
+    "text": "The hard parts\n\n\nArticulating what fairness means to you (or stakeholders) in a problem context\nChoosing a mathematical measure of fairness that speaks to that meaning\nSituating the resulting measure in the whole system"
+  },
+  {
+    "objectID": "index.html#resources",
+    "href": "index.html#resources",
+    "title": "",
+    "section": "Resources",
+    "text": "Resources\n\n\n\ntmwr.org"
+  },
+  {
+    "objectID": "index.html#resources-1",
+    "href": "index.html#resources-1",
+    "title": "",
+    "section": "Resources",
+    "text": "Resources\n\n\n\ntmwr.org\ntidymodels.org"
+  },
+  {
+    "objectID": "index.html#resources-2",
+    "href": "index.html#resources-2",
+    "title": "",
+    "section": "Resources",
+    "text": "Resources\n\n\n\ntmwr.org\ntidymodels.org"
+  },
+  {
+    "objectID": "index.html#resources-3",
+    "href": "index.html#resources-3",
+    "title": "",
+    "section": "Resources",
+    "text": "Resources\n\ntmwr.org\ntidymodels.org\nSlides and example notebooks:\n\n\n\ngithub.com/simonpcouch/conf-24\n\n\n\n\n\ngithub.com/simonpcouch/conf-24"
+  }
+]

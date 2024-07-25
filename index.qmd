@@ -1,0 +1,372 @@
+---
+title: ""
+format: 
+  revealjs:
+    theme: [default, tidymodels.scss]
+    footer: '<span style="color:#CA225E;">github.com/simonpcouch/conf-24</span>'
+editor: source
+knitr:
+  opts_chunk: 
+    echo: true
+    collapse: true
+    comment: "#>"
+---
+
+------------------------------------------------------------------------
+
+```{r}
+#| label: "load"
+#| include: false
+library(tidyverse)
+
+theme_set(theme_bw(base_size = 14) + theme(legend.position = "top"))
+```
+
+![](figures/hero.png){fig-alt='Title slide, reading "Fair machine learning with tidymodels," my name, Simon P. Couch, and my affiliation, Posit PBC. To the right of the text are six hexagonal stickers showing packages from the tidymodels.'}
+
+---
+
+```{r}
+#| label: "plot-regressivity"
+#| echo: false
+set.seed(1)
+regressivity <-
+  tibble(
+    Truth = seq(-.7, .7, length.out = 100),
+    Prediction = Truth^3 / 1.2
+  ) %>%
+  mutate(
+    Truth = (Truth + .9) * 300,
+    Prediction = (Prediction + .9) * 300,
+    Prediction = Prediction + rnorm(nrow(.), 0, 12)
+  )
+
+regressivity_plot <- 
+  ggplot(regressivity) +
+  geom_point(aes(x = Truth, y = Prediction), color = "#CA225E") +
+  geom_line(aes(x = Truth, y = Truth), linetype = "dashed") +
+  tune::coord_obs_pred() +
+  theme(plot.subtitle = element_text(face="italic"))
+```
+
+```{r}
+#| label: "plot-regressivity-vase"
+#| echo: false
+#| fig-width: 5
+#| fig-align: "center"
+#| fig-alt: "ggplot2 line plot with the title 'Predicted versus Actual Vase Weight.' The subtitle reads 'Machine learning model predicts lighter vases are too heavy, and vice versa.'"
+regressivity_plot +
+  labs(
+    title = "Predicted vs. Actual Vase Weight",
+    subtitle = "Machine learning model predicts lighter\nvases are too heavy, and vice versa."
+  ) +
+  scale_x_continuous(labels = ~paste0("\u00a0", as.character(.x), "g")) +
+  scale_y_continuous(labels = ~paste0("\u00a0", as.character(.x), "g"))
+```
+
+. . .
+
+Is this fair?
+
+---
+
+```{r}
+#| label: "plot-regressivity-home"
+#| echo: false
+#| fig-width: 5
+#| fig-align: "center"
+#| fig-alt: "The same exact line plot with the title and subtitle switched. They now read 'Predicted vs. Actual Home Value.' and 'Tax assessment model overvalues cheaper homes, and vice versa.'"
+regressivity_plot +
+  labs(
+    title = "Predicted vs. Actual Home Value",
+    subtitle = "Tax assessment model overvalues\ncheaper homes, and vice versa."
+  ) +
+  scale_x_continuous(labels = ~paste0("$", as.character(.x), "k")) +
+  scale_y_continuous(labels = ~paste0("$", as.character(.x), "k"))
+```
+
+Is _this_ fair?
+
+:::footer
+[github.com/ccao-data/public](https://github.com/ccao-data/public/raw/main/presentations/2023-09-20_Posit-conf.pptx)
+:::
+
+# Fairness is about our beliefs {background-color="#CA225E"}
+
+. . .
+
+_The same model parameters can result in behavior that feels totally benign when situated in one context and deeply unjust in another._
+
+---
+
+<!-- I work on a set of packages for machine learning in R... -->
+
+![](figures/packages.png){fig-alt='A set of hexagonal stickers. The top sticker, which is also larger than the rest, is labeled tidymodels, while the rest contain package names like parsnip and yardstick.'   style="display: block; margin-left: auto; margin-right: auto; width: 50%;"}
+
+---
+
+<!-- This was actually quite a big deal---variants of this story have appeared in publications across the country in the last 10 years. One of a swath of examples where deployment of predictive models deepens inequities in our communities. -->
+
+![](figures/chicago_tribune.gif){fig-alt='A gif screenshot of a news headline from the Chicago Tribune, titled "An Unfair Burden." A video of a drive through a southside Chicago neighborhood plays in the background.' style="display: block; margin-left: auto; margin-right: auto; width: 75%; box-shadow: 5px 5px 10px gray;"}
+
+:::footer
+[github.com/ccao-data/public](https://github.com/ccao-data/public/raw/main/presentations/2023-09-20_Posit-conf.pptx)
+:::
+
+# Defining fairness {background-color="#CA225E"}
+
+---
+
+```{r}
+#| label: "plot-regressivity-home-2"
+#| echo: false
+#| fig-width: 5
+#| fig-align: "center"
+#| fig-alt: "The same tax assessment plot from earlier."
+regressivity_plot +
+  labs(
+    title = "Predicted vs. Actual Home Value",
+    subtitle = "Tax assessment model overvalues\ncheaper homes, and vice versa.",
+    x = "Property Value",
+    y = "Predicted Property Value"
+  ) +
+  scale_x_continuous(labels = ~paste0("$", as.character(.x), "k")) +
+  scale_y_continuous(labels = ~paste0("$", as.character(.x), "k"))
+```
+
+. . .
+
+Proposal: The most performant model is the most fair model.
+
+## Proposal: Performant models are fair
+
+. . .
+
+Apply calibration to correct for correlated errors.
+
+## Proposal: Performant models are fair
+
+```{r}
+#| label: "plot-performant-home"
+#| echo: false
+#| fig-width: 5
+#| fig-align: "center"
+#| fig-alt: "A dot plot of observed vs. predicted home values, except that the predicted values are now centered around the identity line (representing perfect predictions). Errors are i.i.d."
+set.seed(1)
+iid <-
+  tibble(
+    Truth = seq(-.7, .7, length.out = 100),
+    Prediction = Truth
+  ) %>%
+  mutate(
+    Truth = (Truth + .9) * 300,
+    Prediction = (Prediction + .9) * 300,
+    Prediction = Prediction + rnorm(nrow(.), 0, 25)
+  )
+
+iid_plot <- iid %>%
+  ggplot() +
+  geom_point(aes(x = Truth, y = Prediction), color = "#CA225E") +
+  geom_line(aes(x = Truth, y = Truth), linetype = "dashed") +
+  tune::coord_obs_pred() +
+  theme(plot.subtitle = element_text(face="italic")) +
+  labs(
+    subtitle = "Tax assessment model predicts with a \nhigh R-squared, errors i.i.d.",
+    x = "Property Value",
+    y = "Predicted Property Value"
+  ) +
+  scale_x_continuous(labels = ~paste0("$", as.character(.x), "k")) +
+  scale_y_continuous(labels = ~paste0("$", as.character(.x), "k"))
+
+iid_plot
+```
+
+. . .
+
+
+Perhaps this is better?
+
+## Proposal: Performant models are fair
+
+Let's plot the errors:
+
+```{r}
+#| label: "plot-performant-residuals"
+#| echo: false
+#| fig-width: 5
+#| fig-align: "center"
+#| fig-alt: "A plot of the distribution of errors in the previous plot: errors follow a similar distribution across the distribution of property values."
+residual_plot <- iid %>%
+  mutate(Residuals = Truth - Prediction) %>%
+  ggplot() +
+  aes(x = Truth, y = Residuals) +
+  labs(x = "Property Value", "Residual (True Value Minus Predicted)") +
+  geom_point(color = "#CA225E") +
+  scale_x_continuous(labels = ~paste0("$", as.character(.x), "k"))
+
+residual_plot
+```
+. . .
+
+...let's not forget those y-axis units.
+
+## Proposal: Performant models are fair
+
+Let's plot the errors:
+
+```{r}
+#| label: "plot-performant-residuals-2"
+#| echo: false
+#| fig-width: 5
+#| fig-align: "center"
+#| fig-alt: "The same plot as before, but the y axis has been labeled as tens of thousands of dollars."
+residual_plot +
+  scale_y_continuous(labels = ~paste0("$", as.character(.x), "k"))
+```
+
+...let's not forget those y-axis units.
+
+## Proposal: Similar percentage error is most fair
+
+<!-- If we could, we'd just "shrink" the errors for those smaller property values. If we could have done that, though, we wouldn't need a model at all. So, artifically inflate errors on the upper end of the distribution by multiplying the prediction by a random factor that increases in magnitude with the predicted value or train an ensemble with an MPE metric. -->
+
+. . .
+
+```{r}
+#| label: "plot-mpe-home"
+#| echo: false
+#| fig-width: 5
+#| fig-align: "center"
+#| fig-alt: "Predictions from a similarly well-calibrated model, but whose percentage error is consistent across the outcome distribution—assessments for more expensive homes have larger absolute errors."
+set.seed(1)
+mpe <-
+  tibble(
+    Truth = seq(-.7, .7, length.out = 100),
+    Prediction = Truth
+  ) %>%
+  mutate(
+    Truth = (Truth + .9) * 300,
+    Prediction = (Prediction + .9) * 300
+  ) %>%
+  rowwise() %>%
+  mutate(
+    Prediction = Prediction + rnorm(1, 0, Prediction / 5)
+  )
+
+mpe_plot <- mpe %>%
+  ggplot() +
+  geom_point(aes(x = Truth, y = Prediction), color = "#CA225E") +
+  geom_line(aes(x = Truth, y = Truth), linetype = "dashed") +
+  tune::coord_obs_pred() +
+  theme(plot.subtitle = element_text(face="italic")) +
+  labs(
+    subtitle = "Tax assessment model that predicts with \nsimilar percentage error across distribution.",
+    x = "Property Value",
+    y = "Predicted Property Value"
+  ) +
+  scale_x_continuous(labels = ~paste0("$", as.character(.x), "k")) +
+  scale_y_continuous(labels = ~paste0("$", as.character(.x), "k"))
+
+mpe_plot
+```
+
+# Defining fairness {background-color="#CA225E"}
+
+<br>
+<br>
+
+# Defining fairness {background-color="#CA225E"}
+
+_Definitions of fairness "are not mathematically or morally compatible in general."_$^1$
+
+:::footer
+
+<span style="font-size:150%; color:#ffffff;">Mitchell et al. 2021</span>
+:::
+
+# The whole system {background-color="#CA225E"}
+
+## The whole system
+
+How will these predictions even be used, though?
+
+:::incremental
+* **Fixed Percentage**: All properties taxed at .9% assessed value
+* **Homeowner Exemption**: For those that live in the home they own, first xyz not taxed, then .9% assessed value
+* **Transitioning from regressivity**: Is a rapid change in assessment unfair?
+:::
+
+<!-- First example might prefer MPE, second might prefer R^2, third might prefer some blend of the regressive example and another. -->
+
+# The whole system {background-color="#CA225E"}
+
+. . .
+
+_Metrics evaluate the model, but the model is one part of a larger system._
+
+----
+
+## The hard parts
+
+:::incremental
+
+* Articulating what fairness means to you (or stakeholders) in a problem context
+* Choosing a mathematical measure of fairness that speaks to that meaning
+* Situating the resulting measure in the whole system
+
+:::
+
+# {background-color="#CA225E"}
+
+<span style="font-size:170%">_Choose tools that support thinking about the hard parts._</span> 
+
+## Resources
+
+::: columns
+::: {.column width="40%"}
+-   [tmwr.org]{style="color:#CA225E;"}
+:::
+
+::: {.column width="60%"}
+![](https://www.tmwr.org/images/cover.png){height="550" fig-alt='The book cover for "Tidy Modeling with R."' style="box-shadow: 5px 5px 10px gray;"}
+:::
+:::
+
+## Resources
+
+::: columns
+::: {.column width="40%"}
+-   [tmwr.org]{style="color:#CA225E;"}
+-   [tidymodels.org]{style="color:#CA225E;"}
+:::
+
+::: {.column width="60%"}
+![](figures/article_detectors.png){.absolute top=5% left=45% width=40% fig-alt='Screenshot of an analysis titled "Are GPT detectors fair?"' style="box-shadow: 5px 5px 10px gray;"}
+
+:::
+:::
+
+
+## Resources
+
+::: columns
+::: {.column width="40%"}
+-   [tmwr.org]{style="color:#CA225E;"}
+-   [tidymodels.org]{style="color:#CA225E;"}
+:::
+
+::: {.column width="60%"}
+![](figures/article_detectors.png){.absolute top=5% left=45% width=40% fig-alt='Screenshot of an analysis titled "Are GPT detectors fair?"' style="box-shadow: 5px 5px 10px gray;"}
+
+![](figures/article_readmission.png){.absolute top=45% left=45% width=40% fig-alt='Screenshot of an analysis titled "Fair prediction of hospital readmission?"' style="box-shadow: 5px 5px 10px gray;"}
+:::
+:::
+
+
+## Resources
+
+-   [tmwr.org]{style="color:#CA225E;"}
+-   [tidymodels.org]{style="color:#CA225E;"}
+-   Slides and example notebooks:
+
+<span style="font-size:130%"><center>[github.com/simonpcouch/conf-24]{style="color:#CA225E;"}</center></span>
