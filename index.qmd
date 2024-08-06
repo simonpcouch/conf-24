@@ -324,19 +324,6 @@ _Metrics evaluate the model, but the model is one part of a larger system._
 
 ::: columns
 ::: {.column width="40%"}
--   [tmwr.org]{style="color:#CA225E;"}
-:::
-
-::: {.column width="60%"}
-![](https://www.tmwr.org/images/cover.png){height="550" fig-alt='The book cover for "Tidy Modeling with R."' style="box-shadow: 5px 5px 10px gray;"}
-:::
-:::
-
-## Resources
-
-::: columns
-::: {.column width="40%"}
--   [tmwr.org]{style="color:#CA225E;"}
 -   [tidymodels.org]{style="color:#CA225E;"}
 :::
 
@@ -351,7 +338,6 @@ _Metrics evaluate the model, but the model is one part of a larger system._
 
 ::: columns
 ::: {.column width="40%"}
--   [tmwr.org]{style="color:#CA225E;"}
 -   [tidymodels.org]{style="color:#CA225E;"}
 :::
 
@@ -365,7 +351,6 @@ _Metrics evaluate the model, but the model is one part of a larger system._
 
 ## Resources
 
--   [tmwr.org]{style="color:#CA225E;"}
 -   [tidymodels.org]{style="color:#CA225E;"}
 -   Slides and example notebooks:
 
