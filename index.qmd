@@ -304,17 +304,6 @@ How will these predictions even be used, though?
 
 _Metrics evaluate the model, but the model is one part of a larger system._
 
-----
-
-## The hard parts
-
-:::incremental
-
-* Articulating what fairness means to you (or stakeholders) in a problem context
-* Choosing a mathematical measure of fairness that speaks to that meaning
-* Situating the resulting measure in the whole system
-
-:::
 
 # {background-color="#CA225E"}
 
